@@ -2,9 +2,8 @@
 import { ref, reactive, onMounted, computed, watch } from "vue";
 import MedicamentItem from "./MedicamentItem.vue";
 import MedicamentForm from "./MedicamentForm.vue";
-import Medicament from "../Medicament";
+import Medicament from "../Medicament.js";
 import debounce from "lodash.debounce";// Import de debounce (https://codecourse.com/articles/debounce-input-in-vue-3)
-
 
 const listeMedicaments = reactive([]); // Stocke les médicaments
 const medicamentSelectionne = ref({
@@ -241,29 +240,6 @@ function handlerDelete(id) {
     .catch((error) => console.log("Erreur DELETE :", error));
 }
 
-// ========  SURLIGNAGE DU TEXTE CORRESPONDANT À LA RECHERCHE ===============
-const highlightText = (text) => {
-  // Si la recherche est vide, retourner le texte normal
-  if (!debouncedSearch.value) {
-    return text;
-  }
-
-  console.log("Texte original :", text); // Afficher le texte original
-
-
-  // Créer une expression régulière pour trouver les termes correspondant à la recherche
-  const regex = new RegExp(`(${debouncedSearch.value})`, "gi"); // "g" pour global et "i" pour insensible à la casse
-
-  console.log("Valeur de debouncedSearch :", debouncedSearch.value);
-
-  const highlightedText = text.replace(regex, `<span class="highlight">$1</span>`); // Remplacer le texte trouvé par du HTML
-
-  console.log("Texte après surlignage :", highlightedText); // Afficher le texte après surlignage
-
-
-  return highlightedText;
-};
-
 </script>
 
 <template>
@@ -278,10 +254,17 @@ const highlightText = (text) => {
 
     <!-- Liste filtrée -->
     <ul>
-      <li v-for="med in filteredMedicaments" :key="med.id">
-        <span v-html="highlightText(med.denomination)"></span> 
-        ({{ med.formepharmaceutique }}) {{ med.qte }} unités
-      </li>
+      <MedicamentItem
+        v-for="medicament in filteredMedicaments"
+        :key="medicament.id"
+        :medicament="medicament"
+        :searchQuery="debouncedSearch"
+        @eventDelete="handlerDelete"
+        @eventEdit="handlerEdit"
+        @eventUpdate="handlerUpdate"
+        @eventLivrer="handlerLivrer"
+        @eventDispenser="handlerDispenser"
+      />
     </ul>
   </div>
 
@@ -293,25 +276,9 @@ const highlightText = (text) => {
   @updateMedicament="handlerUpdate" 
   />
 
-  <ul>
-    <MedicamentItem
-      v-for="medicament in listeMedicaments"
-      :key="medicament.id"
-      :medicament="medicament"
-      @eventDelete="handlerDelete"
-      @eventEdit="handlerEdit"
-      @eventUpdate="handlerUpdate"
-      @eventLivrer="handlerLivrer"
-      @eventDispenser="handlerDispenser"
-    />
-  </ul>
 
 </template>
 
 
 <style scoped>
-.highlight {
-  background-color: rgb(206, 134, 67) !important;
-  font-weight: bold;
-}
 </style>

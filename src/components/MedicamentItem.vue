@@ -1,13 +1,37 @@
 <script setup>
-defineProps(["medicament"]);
+defineProps([
+  "medicament",
+  "searchQuery"]);
+
 
 //Émettre des événements vers le parent
 const emit = defineEmits(["eventDelete", "eventEdit", "eventLivrer", "eventDispenser"]);
+
+
+// ========  SURLIGNAGE DU TEXTE CORRESPONDANT À LA RECHERCHE ===============
+const highlightText = (text, query) => {
+  // Si la recherche est vide, retourner le texte normal
+  if (!text || !query) {
+    return text;
+  }
+  console.log("Texte original :", text); // Afficher le texte original
+
+  // Créer une expression régulière pour trouver les termes correspondant à la recherche
+  const regex = new RegExp(`(${query})`, "gi"); // "g" pour global et "i" pour insensible à la casse
+
+  const highlightedText = text.replace(regex, `<span class="highlight">$1</span>`); // Remplacer le texte trouvé par du HTML
+
+  console.log("Texte après surlignage :", highlightedText); // Afficher le texte après surlignage
+
+
+  return highlightedText;
+};
+
 </script>
 
 <template>
     <li>
-      <strong>{{ medicament.denomination }}</strong>
+      <strong v-html="highlightText(medicament.denomination, searchQuery)"></strong>
       ({{ medicament.formepharmaceutique }})
       {{ medicament.qte }} unités 
 
@@ -24,7 +48,7 @@ const emit = defineEmits(["eventDelete", "eventEdit", "eventLivrer", "eventDispe
   </li>
 </template>
   
-  <style scoped>
+  <style>
   li {
     display: flex;
     justify-content: space-between;
@@ -33,5 +57,10 @@ const emit = defineEmits(["eventDelete", "eventEdit", "eventLivrer", "eventDispe
   }
   button {
     margin: 5px;
+  }
+  .highlight {
+  background-color: rgb(252, 244, 96) !important;
+  font-weight: regular;
+  padding: 0 4px; 
   }
   </style>
