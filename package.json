@@ -11,9 +11,11 @@
   "dependencies": {
     "lodash.debounce": "^4.0.8",
     "vue": "3.5.13",
-    "vue-lodash": "^2.1.2"
+    "vue-lodash": "^2.1.2",
+    "vuetify": "^3.7.14"
   },
   "devDependencies": {
+    "@mdi/font": "^7.4.47",
     "@vitejs/plugin-vue": "5.2.1",
     "vite": "^6.2.0"
   }
